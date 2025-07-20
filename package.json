@@ -1,0 +1,29 @@
+{
+  "name": "cw-gce-pricing",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "format": "biome format --write src",
+    "lint": "biome lint --write src",
+    "check": "biome check src",
+    "add-latest": "set -x && npm install --save $(node -e 'console.log(Object.keys(require(\"./package.json\").dependencies).map(p => `${p}@latest`).join(\" \"))')",
+    "add-latest-dev": "set -x && npm install --save-dev $(node -e 'console.log(Object.keys(require(\"./package.json\").devDependencies).map(p => `${p}@latest`).join(\" \"))')"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-virtuoso": "^4.13.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react-swc": "^3.11.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.5"
+  }
+}
