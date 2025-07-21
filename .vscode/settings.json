@@ -9,7 +9,8 @@
         "**/__pycache__": true,
         "**/.venv": true
     },
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.defaultInterpreterPath": "${workspaceFolder}/scripts/.venv/bin/python",
+    "python.terminal.activateEnvironment": false,
     "[python]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "charliermarsh.ruff",
@@ -25,7 +26,7 @@
             "source.fixAll.biome": "always"
         }
     },
-    "[css][html][json][jsonc]": {
+    "[css][html][json]": {
         "editor.defaultFormatter": "biomejs.biome",
         "editor.formatOnSave": true
     }

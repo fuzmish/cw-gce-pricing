@@ -30,9 +30,8 @@ jobs:
       - name: Generate pricing data
         env:
           GOOGLE_PROJECT_ID: ${{ secrets.GOOGLE_PROJECT_ID }}
+        run: uv run generate_prices_json.py
         working-directory: scripts
-        run: |
-          uv run generate_prices_json.py
       #
       # Build UI
       #
