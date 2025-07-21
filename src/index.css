@@ -9,6 +9,7 @@
   --color-button-toggle-on-background: rgb(150, 150, 150);
   --color-link: rgb(68, 144, 225);
   --color-input-background: var(--color-background);
+  --color-option-checked-foreground: var(--color-link);
 }
 
 a {
@@ -46,6 +47,11 @@ select {
   color: var(--color-foreground);
   background-color: var(--color-input-background);
   width: 100%;
+}
+
+select option:checked {
+  color: var(--color-option-checked-foreground);
+  background: none;
 }
 
 input {
@@ -136,7 +142,7 @@ body,
 
 #header {
   flex-shrink: 0;
-  margin: 10px 20px;
+  margin: 5px 20px;
 }
 
 #data {

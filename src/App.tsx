@@ -202,7 +202,7 @@ export default function App() {
                 You can get the raw pricing data in{" "}
                 <a href={`${import.meta.env.BASE_URL}data/prices.json`}>JSON</a>. The data
                 generation process is open-source in{" "}
-                <a href="https://github.com/fuzmish/cw-gce-pricing">our GitHub repository</a>.
+                <a href="https://github.com/fuzmish/cw-gce-pricing">our repository</a>.
               </li>
               <li>The pricing data was last updated on {prices?.generated_at.toISOString()}.</li>
               <li>

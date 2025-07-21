@@ -21,9 +21,9 @@ dist-ssr
 *.sln
 *.sw?
 
-/.vscode/launch.json
-/public/data/*.json
 .venv
 .env
 __pycache__
+
+/public/data/*.json
 /out
