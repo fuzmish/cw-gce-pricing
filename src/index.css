@@ -28,6 +28,7 @@ button {
   margin-inline-end: 3px;
   padding: 0.3em 0.6em;
   border-radius: 0.3em;
+  font-size: 0.9em;
 }
 
 button,
@@ -73,6 +74,11 @@ td {
 ul {
   margin: 0;
   padding: 0 0 0 1.4em;
+}
+
+details summary {
+  cursor: pointer;
+  user-select: none;
 }
 
 .vstack {
@@ -124,7 +130,8 @@ ul {
 }
 
 .sku {
-  font-size: 70%;
+  font-size: 0.7em;
+  word-break: keep-all;
 }
 
 html,
