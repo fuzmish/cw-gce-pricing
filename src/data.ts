@@ -1,3 +1,10 @@
+export async function getData<T>(name: string): Promise<T> {
+  const url = `${import.meta.env.BASE_URL}data/${name}.json`
+  const res = await fetch(url)
+  const data = await res.json()
+  return data as T
+}
+
 export interface Sku {
   sku_id: string
   description: string
@@ -35,11 +42,32 @@ export interface Prices {
 }
 
 export async function getPrices(): Promise<Prices> {
-  const url = `${import.meta.env.BASE_URL}data/prices.json`
-  const res = await fetch(url)
-  const data = await res.json()
+  const data = await getData<Prices>("prices")
   return {
     prices: data.prices,
     generated_at: new Date(data.generated_at)
   }
+}
+
+export interface Location {
+  region: string
+  location: string
+}
+
+export async function getLocations(): Promise<Location[]> {
+  const { locations } = await getData<{ locations: Location[] }>("locations")
+  return locations
+}
+
+export interface MachineFamily {
+  name: string
+  category: string
+  description: string
+}
+
+export async function getMachineFamilies(): Promise<MachineFamily[]> {
+  const { machine_families } = await getData<{ machine_families: MachineFamily[] }>(
+    "machine_families"
+  )
+  return machine_families
 }

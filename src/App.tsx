@@ -3,7 +3,16 @@ import { TableVirtuoso } from "react-virtuoso"
 import { MultiSelectFilter } from "./components/MultiSelectFilter"
 import { RangeFilter, type RangeFilterValue } from "./components/RangeFilter"
 import { SortableHeader, type SortDirection } from "./components/SortableHeader"
-import { getPrices, type Price, type Prices, type ResourceSkus } from "./data"
+import {
+  getLocations,
+  getMachineFamilies,
+  getPrices,
+  type Location,
+  type MachineFamily,
+  type Price,
+  type Prices,
+  type ResourceSkus
+} from "./data"
 
 function inRange(value: number | null, range: RangeFilterValue | null): boolean {
   if (range === null) {
@@ -47,6 +56,8 @@ interface SortState {
 }
 
 export default function App() {
+  const [locations, setLocations] = useState<Location[] | null>(null)
+  const [machineFamilies, setMachineFamilies] = useState<MachineFamily[] | null>(null)
   const [prices, setPrices] = useState<Prices | null>(null)
   const [showSkus, setShowSkus] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
@@ -66,6 +77,8 @@ export default function App() {
   const [sortStates, setSortStates] = useState<SortState[]>([])
 
   useEffect(() => {
+    getLocations().then(res => setLocations(res))
+    getMachineFamilies().then(res => setMachineFamilies(res))
     getPrices().then(res => setPrices(res))
   }, [])
 
@@ -194,53 +207,10 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    ["africa-south1", "Johannesburg, South Africa"],
-                    ["asia-east1", "Changhua County, Taiwan, APAC"],
-                    ["asia-east2", "Hong Kong, APAC"],
-                    ["asia-northeast1", "Tokyo, Japan, APAC"],
-                    ["asia-northeast2", "Osaka, Japan, APAC"],
-                    ["asia-northeast3", "Seoul, South Korea, APAC"],
-                    ["asia-south1", "Mumbai, India, APAC"],
-                    ["asia-south2", "Delhi, India, APAC"],
-                    ["asia-southeast1", "Jurong West, Singapore, APAC"],
-                    ["asia-southeast2", "Jakarta, Indonesia, APAC"],
-                    ["australia-southeast1", "Sydney, Australia, APAC"],
-                    ["australia-southeast2", "Melbourne, Australia, APAC"],
-                    ["europe-central2", "Warsaw, Poland, Europe"],
-                    ["europe-north1", "Hamina, Finland, Europe"],
-                    ["europe-north2", "Stockholm, Sweden, Europe"],
-                    ["europe-southwest1", "Madrid, Spain, Europe"],
-                    ["europe-west1", "St. Ghislain, Belgium, Europe"],
-                    ["europe-west2", "London, England, Europe"],
-                    ["europe-west3", "Frankfurt, Germany, Europe"],
-                    ["europe-west4", "Eemshaven, Netherlands, Europe"],
-                    ["europe-west6", "Zurich, Switzerland, Europe"],
-                    ["europe-west8", "Milan, Italy, Europe"],
-                    ["europe-west9", "Paris, France, Europe"],
-                    ["europe-west10", "Berlin, Germany, Europe"],
-                    ["europe-west12", "Turin, Italy, Europe"],
-                    ["me-central1", "Doha, Qatar, Middle East"],
-                    ["me-central2", "Dammam, Saudi Arabia, Middle East"],
-                    ["me-west1", "Tel Aviv, Israel, Middle East"],
-                    ["northamerica-northeast1", "Montréal, Québec, North America"],
-                    ["northamerica-northeast2", "Toronto, Ontario, North America"],
-                    ["northamerica-south1", "Queretaro, Mexico, North America"],
-                    ["southamerica-east1", "Osasco, São Paulo, Brazil, South America"],
-                    ["southamerica-west1", "Santiago, Chile, South America"],
-                    ["us-central1", "Council Bluffs, Iowa, North America"],
-                    ["us-east1", "Moncks Corner, South Carolina, North America"],
-                    ["us-east4", "Ashburn, Virginia, North America"],
-                    ["us-east5", "Columbus, Ohio, North America"],
-                    ["us-south1", "Dallas, Texas, North America"],
-                    ["us-west1", "The Dalles, Oregon, North America	"],
-                    ["us-west2", "Los Angeles, California, North America"],
-                    ["us-west3", "Salt Lake City, Utah, North America"],
-                    ["us-west4", "Las Vegas, Nevada, North America"]
-                  ].map(([region, description]) => (
+                  {locations?.map(({ region, location }) => (
                     <tr key={region}>
                       <td>{region}</td>
-                      <td>{description}</td>
+                      <td>{location}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -257,88 +227,9 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    ["A2", "Accelerator-optimized", "Intel Cascade Lake	+ NVIDIA A100 GPUs"],
-                    [
-                      "A3 Ultra",
-                      "Accelerator-optimized",
-                      "5th Generation Intel Xeon Scalable processor (Emerald Rapids) + NVIDIA H200 SXM GPUs"
-                    ],
-                    [
-                      "A3 Mega, High, Edge",
-                      "Accelerator-optimized",
-                      "4th Generation Intel Xeon Scalable processor (Sapphire Rapids) + NVIDIA H100 SXM GPUs"
-                    ],
-                    [
-                      "A4",
-                      "Accelerator-optimized",
-                      "5th Generation Intel Xeon Scalable Processor (Emerald Rapids) + NVIDIA B200 GPUs"
-                    ],
-                    ["C2", "Compute-optimized", "Intel 3.9 GHz Cascade Lake processors"],
-                    ["C2D", "Compute-optimized", "3rd generation AMD EPYC Milan platform"],
-                    [
-                      "C3",
-                      "General-purpose",
-                      "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids), DDR5 memory, and Titanium"
-                    ],
-                    ["C3D", "General-purpose", "4th generation AMD EPYC™ (Genoa) processor"],
-                    [
-                      "C4",
-                      "General-purpose",
-                      "5th generation (code-named Emerald Rapids) or 6th generation (code-named Granite Rapids) (Preview) Intel Xeon Scalable processors and Titanium"
-                    ],
-                    ["C4A", "General-purpose", "Google's first Arm-based Axion™ processor"],
-                    [
-                      "C4D",
-                      "General-purpose",
-                      "5th generation AMD EPYC Turin processor and Titanium"
-                    ],
-                    ["ct3", "TPU", "v3"],
-                    ["ct3p", "TPU", "v3"],
-                    ["ct4p", "TPU", "v4"],
-                    ["ct5l", "TPU", "v5"],
-                    ["ct5lp", "TPU", "v5e"],
-                    ["ct5p", "TPU", "v5p"],
-                    ["ct6e", "TPU", "v6e (Trillium)"],
-                    ["E2", "General-purpose", "Intel and AMD EPYC processors"],
-                    ["F1, G1", "General-purpose", "Same as N1, shared core machine types"],
-                    ["G2", "Accelerator-optimized", "Intel Cascade Lake + NVIDIA L4 GPUs"],
-                    [
-                      "H3",
-                      "Compute-optimized",
-                      "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids), DDR5 memory, and Titanium offload processors"
-                    ],
-                    ["M1", "Memory-optimized", "Intel Skylake or Broadwell"],
-                    ["M2", "Memory-optimized", "Intel Cascade Lake"],
-                    ["M3", "Memory-optimized", "Intel Ice Lake"],
-                    ["M4", "Memory-optimized", "Intel Xeon Scalable Sapphire Rapids processors"],
-                    [
-                      "N1",
-                      "General-purpose",
-                      "Intel Skylake, Broadwell, Haswell, Sandy Bridge, and Ivy Bridge CPU platforms"
-                    ],
-                    ["N2", "General-purpose", "Ice Lake or Cascade Lake"],
-                    ["N2D", "General-purpose", "AMD EPYC Milan or AMD EPYC Rome processors"],
-                    [
-                      "N4",
-                      "General-purpose",
-                      "5th generation Intel Xeon Scalable processors (code-named Emerald Rapids) and Titanium"
-                    ],
-                    ["T2A", "General-purpose", "Ampere Altra Arm processor"],
-                    ["T2D", "General-purpose", "3rd generation AMD EPYC Milan processor"],
-                    [
-                      "X4",
-                      "Memory-optimized",
-                      "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids) and Titanium"
-                    ],
-                    [
-                      "Z3",
-                      "Storage-optimized",
-                      "4th generation Intel Xeon Scalable processor (code-named Sapphire Rapids), DDR5 memory, and Titanium offload processors"
-                    ]
-                  ].map(([key, category, description]) => (
-                    <tr key={key}>
-                      <td>{key}</td>
+                  {machineFamilies?.map(({ name, category, description }) => (
+                    <tr key={name}>
+                      <td>{name}</td>
                       <td>{category}</td>
                       <td>{description}</td>
                     </tr>
@@ -347,7 +238,7 @@ export default function App() {
               </table>
             </details>
           </div>
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: "25%" }}>
             <ul>
               <li>
                 No guarantee for data accuracy. Use at your own risk and verify the official pricing
