@@ -1,0 +1,179 @@
+{
+  "machine_families": [
+    {
+      "name": "a2",
+      "category": "Accelerator-optimized",
+      "description": "Intel Cascade Lake + NVIDIA A100 GPUs"
+    },
+    {
+      "name": "a3 (ultra)",
+      "category": "Accelerator-optimized",
+      "description": "5th Generation Intel Xeon Scalable processor (Emerald Rapids) + NVIDIA H200 SXM GPUs"
+    },
+    {
+      "name": "a3 (mega, high, edge)",
+      "category": "Accelerator-optimized",
+      "description": "4th Generation Intel Xeon Scalable processor (Sapphire Rapids) + NVIDIA H100 SXM GPUs"
+    },
+    {
+      "name": "a4",
+      "category": "Accelerator-optimized",
+      "description": "5th Generation Intel Xeon Scalable Processor (Emerald Rapids) + NVIDIA B200 GPUs"
+    },
+    {
+      "name": "c2",
+      "category": "Compute-optimized",
+      "description": "Intel Cascade Lake processors"
+    },
+    {
+      "name": "c2d",
+      "category": "Compute-optimized",
+      "description": "3rd generation AMD EPYC Milan platform"
+    },
+    {
+      "name": "c3",
+      "category": "General-purpose",
+      "description": "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids), DDR5 memory, and Titanium"
+    },
+    {
+      "name": "c3d",
+      "category": "General-purpose",
+      "description": "4th generation AMD EPYC (Genoa) processor"
+    },
+    {
+      "name": "c4",
+      "category": "General-purpose",
+      "description": "5th generation (code-named Emerald Rapids) or 6th generation (code-named Granite Rapids) (Preview) Intel Xeon Scalable processors and Titanium"
+    },
+    {
+      "name": "c4a",
+      "category": "General-purpose",
+      "description": "Google's first Arm-based Axion processor"
+    },
+    {
+      "name": "c4d",
+      "category": "General-purpose",
+      "description": "5th generation AMD EPYC Turin processor and Titanium"
+    },
+    {
+      "name": "ct3",
+      "category": "TPU",
+      "description": "v3"
+    },
+    {
+      "name": "ct3p",
+      "category": "TPU",
+      "description": "v3"
+    },
+    {
+      "name": "ct4p",
+      "category": "TPU",
+      "description": "v4"
+    },
+    {
+      "name": "ct5l",
+      "category": "TPU",
+      "description": "v5"
+    },
+    {
+      "name": "ct5lp",
+      "category": "TPU",
+      "description": "v5e"
+    },
+    {
+      "name": "ct5p",
+      "category": "TPU",
+      "description": "v5p"
+    },
+    {
+      "name": "ct6e",
+      "category": "TPU",
+      "description": "v6e (Trillium)"
+    },
+    {
+      "name": "e2",
+      "category": "General-purpose",
+      "description": "Intel and AMD EPYC processors"
+    },
+    {
+      "name": "f1",
+      "category": "General-purpose",
+      "description": "Same as N1, shared core machine types"
+    },
+    {
+      "name": "g1",
+      "category": "General-purpose",
+      "description": "Same as N1, shared core machine types"
+    },
+    {
+      "name": "g2",
+      "category": "Accelerator-optimized",
+      "description": "Intel Cascade Lake + NVIDIA L4 GPUs"
+    },
+    {
+      "name": "h3",
+      "category": "Compute-optimized",
+      "description": "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids), DDR5 memory, and Titanium offload processors"
+    },
+    {
+      "name": "m1",
+      "category": "Memory-optimized",
+      "description": "Intel Skylake or Broadwell"
+    },
+    {
+      "name": "m2",
+      "category": "Memory-optimized",
+      "description": "Intel Cascade Lake"
+    },
+    {
+      "name": "m3",
+      "category": "Memory-optimized",
+      "description": "Intel Ice Lake"
+    },
+    {
+      "name": "m4",
+      "category": "Memory-optimized",
+      "description": "Intel Xeon Scalable Sapphire Rapids processors"
+    },
+    {
+      "name": "n1",
+      "category": "General-purpose",
+      "description": "Intel Skylake, Broadwell, Haswell, Sandy Bridge, and Ivy Bridge CPU platforms"
+    },
+    {
+      "name": "n2",
+      "category": "General-purpose",
+      "description": "Ice Lake or Cascade Lake"
+    },
+    {
+      "name": "n2d",
+      "category": "General-purpose",
+      "description": "AMD EPYC Milan or AMD EPYC Rome processors"
+    },
+    {
+      "name": "n4",
+      "category": "General-purpose",
+      "description": "5th generation Intel Xeon Scalable processors (code-named Emerald Rapids) and Titanium"
+    },
+    {
+      "name": "t2a",
+      "category": "General-purpose",
+      "description": "Ampere Altra Arm processor"
+    },
+    {
+      "name": "t2d",
+      "category": "General-purpose",
+      "description": "3rd generation AMD EPYC Milan processor"
+    },
+    {
+      "name": "x4",
+      "category": "Memory-optimized",
+      "description": "4th generation Intel Xeon Scalable processors (code-named Sapphire Rapids) and Titanium"
+    },
+    {
+      "name": "z3",
+      "category": "Storage-optimized",
+      "description": "4th generation Intel Xeon Scalable processor (code-named Sapphire Rapids), DDR5 memory, and Titanium offload processors"
+    }
+  ]
+}
