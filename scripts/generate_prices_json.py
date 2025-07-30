@@ -4,6 +4,7 @@ import os
 import re
 from datetime import datetime
 
+from google.cloud import bigquery
 from google.cloud.billing_v1 import CloudCatalogClient
 from google.cloud.compute_v1 import MachineTypesClient, ZonesClient
 
@@ -237,8 +238,56 @@ def generate_pricing_table(machine_types: dict, skus: dict) -> list[dict]:
     return result
 
 
+def save_to_bigquery(
+    prices: list[dict],
+    client: bigquery.Client,
+    destination: bigquery.TableReference,
+) -> bigquery.LoadJob:
+    partition_id = datetime.now().strftime("%Y%m%d")
+    load_job = client.load_table_from_json(
+        json_rows=prices,
+        destination=bigquery.TableReference(
+            dataset_ref=bigquery.DatasetReference(
+                project=destination.project, dataset_id=destination.dataset_id
+            ),
+            table_id=f"{destination.table_id}${partition_id}",
+        ),
+        job_config=bigquery.LoadJobConfig(
+            clustering_fields=["region", "name"],
+            schema=[
+                bigquery.SchemaField("region", "STRING"),
+                bigquery.SchemaField("zone", "STRING"),
+                bigquery.SchemaField("family", "STRING"),
+                bigquery.SchemaField("name", "STRING"),
+                bigquery.SchemaField("guest_cpus", "INTEGER"),
+                bigquery.SchemaField("memory_mb", "INTEGER"),
+                bigquery.SchemaField("cpu_on_demand", "FLOAT"),
+                bigquery.SchemaField("cpu_spot", "FLOAT"),
+                bigquery.SchemaField("memory_on_demand", "FLOAT"),
+                bigquery.SchemaField("memory_spot", "FLOAT"),
+                bigquery.SchemaField("total_on_demand", "FLOAT"),
+                bigquery.SchemaField("total_spot", "FLOAT"),
+                bigquery.SchemaField("discount_rate", "FLOAT"),
+                bigquery.SchemaField("sku", "JSON"),
+            ],
+            time_partitioning=bigquery.TimePartitioning(
+                type_=bigquery.TimePartitioningType.DAY
+            ),
+            write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
+        ),
+    )
+    result = load_job.result()
+    logger.info(
+        f"Successfully loaded {result.output_rows} rows into {result.destination}"
+    )
+    return result
+
+
 def main():
     project = os.environ["GOOGLE_PROJECT_ID"]
+    location = os.environ.get("BIGQUERY_LOCATION", "asia-northeast1")
+    dataset = os.environ.get("BIGQUERY_DATASET", "gce_pricing")
+    table = os.environ.get("BIGQUERY_TABLE", "prices")
 
     out_dir = os.path.join(os.path.dirname(__file__), "..", "out")
     os.makedirs(out_dir, exist_ok=True)
@@ -285,6 +334,16 @@ def main():
 
         with open(prices_json, "w") as f:
             json.dump(result, f)
+
+    with open(prices_json, "r") as f:
+        prices = json.load(f)["prices"]
+
+    client = bigquery.Client(project=project, location=location)
+    destination = bigquery.TableReference(
+        dataset_ref=bigquery.DatasetReference(project=project, dataset_id=dataset),
+        table_id=table,
+    )
+    save_to_bigquery(prices, client, destination)
 
 
 if __name__ == "__main__":
