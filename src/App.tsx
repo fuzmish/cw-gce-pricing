@@ -73,7 +73,17 @@ export default function App() {
   const [cpuSpotFilter, setCpuSpotFilter] = useState<RangeFilterValue | null>(null)
   const [memorySpotFilter, setMemorySpotFilter] = useState<RangeFilterValue | null>(null)
   const [totalSpotFilter, setTotalSpotFilter] = useState<RangeFilterValue | null>(null)
-  const [discountRateFilter, setDiscountRateFilter] = useState<RangeFilterValue | null>(null)
+  const [discountRateSpotFilter, setDiscountRateSpotFilter] = useState<RangeFilterValue | null>(
+    null
+  )
+  const [cpuC1yFilter, setCpuC1yFilter] = useState<RangeFilterValue | null>(null)
+  const [memoryC1yFilter, setMemoryC1yFilter] = useState<RangeFilterValue | null>(null)
+  const [totalC1yFilter, setTotalC1yFilter] = useState<RangeFilterValue | null>(null)
+  const [discountRateC1yFilter, setDiscountRateC1yFilter] = useState<RangeFilterValue | null>(null)
+  const [cpuC3yFilter, setCpuC3yFilter] = useState<RangeFilterValue | null>(null)
+  const [memoryC3yFilter, setMemoryC3yFilter] = useState<RangeFilterValue | null>(null)
+  const [totalC3yFilter, setTotalC3yFilter] = useState<RangeFilterValue | null>(null)
+  const [discountRateC3yFilter, setDiscountRateC3yFilter] = useState<RangeFilterValue | null>(null)
   const [sortStates, setSortStates] = useState<SortState[]>([])
 
   useEffect(() => {
@@ -95,7 +105,15 @@ export default function App() {
     setCpuSpotFilter(null)
     setMemorySpotFilter(null)
     setTotalSpotFilter(null)
-    setDiscountRateFilter(null)
+    setDiscountRateSpotFilter(null)
+    setCpuC1yFilter(null)
+    setMemoryC1yFilter(null)
+    setTotalC1yFilter(null)
+    setDiscountRateC1yFilter(null)
+    setCpuC3yFilter(null)
+    setMemoryC3yFilter(null)
+    setTotalC3yFilter(null)
+    setDiscountRateC3yFilter(null)
   }
 
   function onSort(enableMultiSort: boolean, field: string) {
@@ -140,7 +158,15 @@ export default function App() {
       inRange(price.cpu_spot, cpuSpotFilter) &&
       inRange(price.memory_spot, memorySpotFilter) &&
       inRange(price.total_spot, totalSpotFilter) &&
-      inRange(price.discount_rate, discountRateFilter)
+      inRange(price.discount_rate_spot, discountRateSpotFilter) &&
+      inRange(price.cpu_c1y, cpuC1yFilter) &&
+      inRange(price.memory_c1y, memoryC1yFilter) &&
+      inRange(price.total_c1y, totalC1yFilter) &&
+      inRange(price.discount_rate_c1y, discountRateC1yFilter) &&
+      inRange(price.cpu_c3y, cpuC3yFilter) &&
+      inRange(price.memory_c3y, memoryC3yFilter) &&
+      inRange(price.total_c3y, totalC3yFilter) &&
+      inRange(price.discount_rate_c3y, discountRateC3yFilter)
   )
   const sortedPrices =
     sortStates.length === 0
@@ -258,11 +284,12 @@ export default function App() {
                 <a href="https://github.com/fuzmish/cw-gce-pricing">our repository</a>.
               </li>
               <li>The pricing data was last updated on {prices?.generated_at.toISOString()}.</li>
+              <li>All prices are shown in USD per instance per month.</li>
               <li>
                 Click column headers to sort in ascending or descending order. ⌘+click to sort by
                 multiple columns.
               </li>
-              <li>Multi-select filters: ⌘+click to select or deselect multiple options.</li>
+              <li>Multi-select filters: ⌘+click to select or unselect multiple options.</li>
             </ul>
           </div>
         </div>
@@ -348,8 +375,56 @@ export default function App() {
                 state={sortStates}
               />
               <SortableHeader
-                fieldName="discount_rate"
-                label="Discount Rate"
+                fieldName="discount_rate_spot"
+                label="Discount Rate Spot"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="cpu_c1y"
+                label="CPU Commit 1 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="memory_c1y"
+                label="Memory Commit 1 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="total_c1y"
+                label="Total Commit 1 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="discount_rate_c1y"
+                label="Discount Rate Commit 1 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="cpu_c3y"
+                label="CPU Commit 3 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="memory_c3y"
+                label="Memory Commit 3 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="total_c3y"
+                label="Total Commit 3 Year"
+                onSort={onSort}
+                state={sortStates}
+              />
+              <SortableHeader
+                fieldName="discount_rate_c3y"
+                label="Discount Rate Commit 3 Year"
                 onSort={onSort}
                 state={sortStates}
               />
@@ -388,7 +463,24 @@ export default function App() {
                 <RangeFilter onValueChange={setCpuSpotFilter} value={cpuSpotFilter} />
                 <RangeFilter onValueChange={setMemorySpotFilter} value={memorySpotFilter} />
                 <RangeFilter onValueChange={setTotalSpotFilter} value={totalSpotFilter} />
-                <RangeFilter onValueChange={setDiscountRateFilter} value={discountRateFilter} />
+                <RangeFilter
+                  onValueChange={setDiscountRateSpotFilter}
+                  value={discountRateSpotFilter}
+                />
+                <RangeFilter onValueChange={setCpuC1yFilter} value={cpuC1yFilter} />
+                <RangeFilter onValueChange={setMemoryC1yFilter} value={memoryC1yFilter} />
+                <RangeFilter onValueChange={setTotalC1yFilter} value={totalC1yFilter} />
+                <RangeFilter
+                  onValueChange={setDiscountRateC1yFilter}
+                  value={discountRateC1yFilter}
+                />
+                <RangeFilter onValueChange={setCpuC3yFilter} value={cpuC3yFilter} />
+                <RangeFilter onValueChange={setMemoryC3yFilter} value={memoryC3yFilter} />
+                <RangeFilter onValueChange={setTotalC3yFilter} value={totalC3yFilter} />
+                <RangeFilter
+                  onValueChange={setDiscountRateC3yFilter}
+                  value={discountRateC3yFilter}
+                />
               </tr>
             )}
           </>
@@ -420,7 +512,27 @@ export default function App() {
               {showSkus && <div className="sku">{getSku(price, "Preemptible", "RAM")}</div>}
             </td>
             <td>{price.total_spot?.toFixed(2) || "-"}</td>
-            <td>{price.discount_rate ? `${price.discount_rate.toFixed(2)}%` : "-"}</td>
+            <td>{price.discount_rate_spot ? `${price.discount_rate_spot.toFixed(2)}%` : "-"}</td>
+            <td>
+              {price.cpu_c1y?.toFixed(2) || "-"}
+              {showSkus && <div className="sku">{getSku(price, "Commit1Yr", "CPU")}</div>}
+            </td>
+            <td>
+              {price.memory_c1y?.toFixed(2) || "-"}
+              {showSkus && <div className="sku">{getSku(price, "Commit1Yr", "RAM")}</div>}
+            </td>
+            <td>{price.total_c1y?.toFixed(2) || "-"}</td>
+            <td>{price.discount_rate_c1y ? `${price.discount_rate_c1y.toFixed(2)}%` : "-"}</td>
+            <td>
+              {price.cpu_c3y?.toFixed(2) || "-"}
+              {showSkus && <div className="sku">{getSku(price, "Commit3Yr", "CPU")}</div>}
+            </td>
+            <td>
+              {price.memory_c3y?.toFixed(2) || "-"}
+              {showSkus && <div className="sku">{getSku(price, "Commit3Yr", "RAM")}</div>}
+            </td>
+            <td>{price.total_c3y?.toFixed(2) || "-"}</td>
+            <td>{price.discount_rate_c3y ? `${price.discount_rate_c3y.toFixed(2)}%` : "-"}</td>
           </>
         )}
       />

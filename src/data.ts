@@ -24,15 +24,25 @@ export interface Price {
   guest_cpus: number
   memory_mb: number
   cpu_on_demand: number | null
-  memory_on_demand: number | null
-  total_on_demand: number | null
   cpu_spot: number | null
+  cpu_c1y: number | null
+  cpu_c3y: number | null
+  memory_on_demand: number | null
   memory_spot: number | null
+  memory_c1y: number | null
+  memory_c3y: number | null
+  total_on_demand: number | null
   total_spot: number | null
-  discount_rate: number | null
+  total_c1y: number | null
+  total_c3y: number | null
+  discount_rate_spot: number | null
+  discount_rate_c1y: number | null
+  discount_rate_c3y: number | null
   sku: {
     OnDemand?: ResourceSkus
     Preemptible?: ResourceSkus
+    Commit1Yr?: ResourceSkus
+    Commit3Yr?: ResourceSkus
   } | null
 }
 

@@ -32,7 +32,11 @@ def get_machine_types(project: str, zone: str) -> list[dict]:
     client = MachineTypesClient()
     machine_types: dict[str, dict] = {}
     for m in client.list(project=project, zone=zone):
+        # skip deprecated
         if m.deprecated.state == "DEPRECATED":
+            continue
+        # skip TPUs
+        if m.name.startswith("ct"):
             continue
         machine_types[m.name] = {
             "family": m.name.split("-")[0],
@@ -53,7 +57,7 @@ def get_machine_type_from_sku(resource_group: str, description: str) -> str:
         return "G1"
     m = re.match(r"^(?:Spot Preemptible\s+)?Compute\s+optimized", description)
     if m is not None:
-        return r"C2"
+        return "C2"
     m = re.match(
         r"^(?:Spot Preemptible\s+)?Custom\s+(?:Extended\s+)?Instance", description
     )
@@ -69,6 +73,12 @@ def get_machine_type_from_sku(resource_group: str, description: str) -> str:
     if m is not None:
         family = m.group(1).upper()
         return family
+    m = re.match(r"^Commitment\s+[^:]+:\s+([^\s]+)\s*", description)
+    if m is not None:
+        return m.group(1).upper()
+    m = re.match(r"^Commitment:\s+(?:Compute\s+optimized)\s*", description)
+    if m is not None:
+        return "C2"
     # unknown format
     return None
 
@@ -85,7 +95,7 @@ def get_skus() -> dict:
             continue
         if resource_group not in ("CPU", "F1Micro", "G1Small", "N1Standard", "RAM"):
             continue
-        if usage_type not in ("OnDemand", "Preemptible"):
+        if usage_type not in ("OnDemand", "Preemptible", "Commit1Yr", "Commit3Yr"):
             continue
         if "Sole Tenancy" in description:
             continue
@@ -159,11 +169,19 @@ def get_skus() -> dict:
 def lookup_price(machine_type: dict, skus: dict) -> dict:
     cpu_on_demand: float | None = None
     cpu_spot: float | None = None
+    cpu_c1y: float | None = None
+    cpu_c3y: float | None = None
     memory_on_demand: float | None = None
     memory_spot: float | None = None
+    memory_c1y: float | None = None
+    memory_c3y: float | None = None
     total_on_demand: float | None = None
     total_spot: float | None = None
-    discount_rate: float | None = None
+    total_c1y: float | None = None
+    total_c3y: float | None = None
+    discount_rate_spot: float | None = None
+    discount_rate_c1y: float | None = None
+    discount_rate_c3y: float | None = None
     sku: dict | None = None
 
     guest_cpus = machine_type["guest_cpus"]
@@ -175,20 +193,34 @@ def lookup_price(machine_type: dict, skus: dict) -> dict:
     # lookup sku
     if family in skus:
         sku = skus[family]
-        on_demand = sku["OnDemand"]
+        on_demand = sku.get("OnDemand", {})
         if "CPU" in on_demand:
             unit_price = on_demand["CPU"]["unit_price_nanos"]
             cpu_on_demand = unit_price * guest_cpus * 24 * 365 / 12 / 1e9
         if "RAM" in on_demand:
             unit_price = on_demand["RAM"]["unit_price_nanos"]
             memory_on_demand = unit_price * memory_mb * 24 * 365 / 12 / 1e9 / 1024
-        spot = sku["Preemptible"]
-        if "CPU" in spot:
-            unit_price = spot["CPU"]["unit_price_nanos"]
+        preemptible = sku.get("Preemptible", {})
+        if "CPU" in preemptible:
+            unit_price = preemptible["CPU"]["unit_price_nanos"]
             cpu_spot = unit_price * guest_cpus * 24 * 365 / 12 / 1e9
-        if "RAM" in spot:
-            unit_price = spot["RAM"]["unit_price_nanos"]
+        if "RAM" in preemptible:
+            unit_price = preemptible["RAM"]["unit_price_nanos"]
             memory_spot = unit_price * memory_mb * 24 * 365 / 12 / 1e9 / 1024
+        commit1yr = sku.get("Commit1Yr", {})
+        if "CPU" in commit1yr:
+            unit_price = commit1yr["CPU"]["unit_price_nanos"]
+            cpu_c1y = unit_price * guest_cpus * 24 * 365 / 12 / 1e9
+        if "RAM" in commit1yr:
+            unit_price = commit1yr["RAM"]["unit_price_nanos"]
+            memory_c1y = unit_price * memory_mb * 24 * 365 / 12 / 1e9 / 1024
+        commit3yr = sku.get("Commit3Yr", {})
+        if "CPU" in commit3yr:
+            unit_price = commit3yr["CPU"]["unit_price_nanos"]
+            cpu_c3y = unit_price * guest_cpus * 24 * 365 / 12 / 1e9
+        if "RAM" in commit3yr:
+            unit_price = commit3yr["RAM"]["unit_price_nanos"]
+            memory_c3y = unit_price * memory_mb * 24 * 365 / 12 / 1e9 / 1024
     else:
         logger.warning(f"warning: machine family {family} not found in pricing data")
 
@@ -204,18 +236,42 @@ def lookup_price(machine_type: dict, skus: dict) -> dict:
             total_spot += cpu_spot
         if memory_spot is not None:
             total_spot += memory_spot
+    if cpu_c1y is not None or memory_c1y is not None:
+        total_c1y = 0
+        if cpu_c1y is not None:
+            total_c1y += cpu_c1y
+        if memory_c1y is not None:
+            total_c1y += memory_c1y
+    if cpu_c3y is not None or memory_c3y is not None:
+        total_c3y = 0
+        if cpu_c3y is not None:
+            total_c3y += cpu_c3y
+        if memory_c3y is not None:
+            total_c3y += memory_c3y
 
     if total_on_demand is not None and total_spot is not None and total_on_demand > 0:
-        discount_rate = (total_on_demand - total_spot) / total_on_demand * 100
+        discount_rate_spot = (total_on_demand - total_spot) / total_on_demand * 100
+    if total_on_demand is not None and total_c1y is not None and total_on_demand > 0:
+        discount_rate_c1y = (total_on_demand - total_c1y) / total_on_demand * 100
+    if total_on_demand is not None and total_c3y is not None and total_on_demand > 0:
+        discount_rate_c3y = (total_on_demand - total_c3y) / total_on_demand * 100
 
     return {
         "cpu_on_demand": cpu_on_demand,
         "cpu_spot": cpu_spot,
+        "cpu_c1y": cpu_c1y,
+        "cpu_c3y": cpu_c3y,
         "memory_on_demand": memory_on_demand,
         "memory_spot": memory_spot,
+        "memory_c1y": memory_c1y,
+        "memory_c3y": memory_c3y,
         "total_on_demand": total_on_demand,
         "total_spot": total_spot,
-        "discount_rate": discount_rate,
+        "total_c1y": total_c1y,
+        "total_c3y": total_c3y,
+        "discount_rate_spot": discount_rate_spot,
+        "discount_rate_c1y": discount_rate_c1y,
+        "discount_rate_c3y": discount_rate_c3y,
         "sku": sku,
     }
 
