@@ -14,16 +14,16 @@
     "add-latest-dev": "set -x && npm install --save-dev $(node -e 'console.log(Object.keys(require(\"./package.json\").devDependencies).map(p => `${p}@latest`).join(\" \"))')"
   },
   "dependencies": {
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-virtuoso": "^4.13.0"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-virtuoso": "^4.14.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react-swc": "^3.11.0",
-    "typescript": "^5.8.3",
-    "vite": "^7.0.5"
+    "@biomejs/biome": "^2.1.4",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react-swc": "^4.0.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2"
   }
 }
