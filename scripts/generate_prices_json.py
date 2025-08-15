@@ -73,6 +73,9 @@ def get_machine_type_from_sku(resource_group: str, description: str) -> str:
     if m is not None:
         family = m.group(1).upper()
         return family
+    m = re.match(r"Commitment\s+v1:\s+(?:Cpu|Ram)\s+in", description)
+    if m is not None:
+        return "N1"  # https://cloud.google.com/skus/sku-groups/n1-vms-1-year-cud
     m = re.match(r"^Commitment\s+[^:]+:\s+([^\s]+)\s*", description)
     if m is not None:
         return m.group(1).upper()
@@ -166,7 +169,7 @@ def get_skus() -> dict:
     return result
 
 
-def lookup_price(machine_type: dict, skus: dict) -> dict:
+def lookup_price(skus: dict, region: str, machine_type: dict) -> dict:
     cpu_on_demand: float | None = None
     cpu_spot: float | None = None
     cpu_c1y: float | None = None
@@ -191,8 +194,8 @@ def lookup_price(machine_type: dict, skus: dict) -> dict:
     if family == "M2":
         family = "M1"
     # lookup sku
-    if family in skus:
-        sku = skus[family]
+    if region in skus and family in skus[region]:
+        sku = skus[region][family]
         on_demand = sku.get("OnDemand", {})
         if "CPU" in on_demand:
             unit_price = on_demand["CPU"]["unit_price_nanos"]
@@ -222,7 +225,9 @@ def lookup_price(machine_type: dict, skus: dict) -> dict:
             unit_price = commit3yr["RAM"]["unit_price_nanos"]
             memory_c3y = unit_price * memory_mb * 24 * 365 / 12 / 1e9 / 1024
     else:
-        logger.warning(f"warning: machine family {family} not found in pricing data")
+        logger.warning(
+            f"warning: machine family {family} not found in {region} pricing data"
+        )
 
     if cpu_on_demand is not None or memory_on_demand is not None:
         total_on_demand = 0
@@ -277,19 +282,30 @@ def lookup_price(machine_type: dict, skus: dict) -> dict:
 
 
 def generate_pricing_table(machine_types: dict, skus: dict) -> list[dict]:
-    result = []
+    ret = {}
     for region in machine_types:
         for zone in machine_types[region]:
             for machine_type in machine_types[region][zone]:
-                price = lookup_price(machine_type, skus[region])
-                result.append(
-                    {
+                name = machine_type["name"]
+                if region not in ret:
+                    ret[region] = {}
+                if name not in ret[region]:
+                    price = lookup_price(skus, region, machine_type)
+                    ret[region][name] = {
                         "region": region,
-                        "zone": zone,
-                        **machine_type,
+                        "zones": set(),
                         **price,
+                        **machine_type,
                     }
-                )
+                ret[region][name]["zones"].add(zone)
+
+    result = []
+    for region in ret:
+        for machine_type in ret[region]:
+            value = {**ret[region][machine_type]}
+            value["zones"] = list(sorted(value["zones"]))
+            result.append(value)
+
     return result
 
 

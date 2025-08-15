@@ -134,7 +134,7 @@ export default function App() {
   }
 
   const regions = [...new Set(prices?.prices.map(p => p.region))].sort()
-  const zones = [...new Set(prices?.prices.map(price => price.zone))].sort()
+  const zones = [...new Set(prices?.prices.flatMap(price => price.zones))].sort()
   const families = [...new Set(prices?.prices.map(price => price.family))].sort()
   const names = [...new Set(prices?.prices.map(price => price.name))].sort()
   const cpus = [...new Set(prices?.prices.map(price => price.guest_cpus))]
@@ -147,7 +147,7 @@ export default function App() {
   const filteredPrices = prices?.prices.filter(
     price =>
       (regionFilter.size === 0 || regionFilter.has(price.region)) &&
-      (zoneFilter.size === 0 || zoneFilter.has(price.zone)) &&
+      (zoneFilter.size === 0 || [...zoneFilter].every(z => price.zones.indexOf(z) !== -1)) &&
       (familyFilter.size === 0 || familyFilter.has(price.family)) &&
       (nameFilter.size === 0 || nameFilter.has(price.name)) &&
       (cpuFilter.size === 0 || cpuFilter.has(price.guest_cpus.toString())) &&
@@ -489,7 +489,7 @@ export default function App() {
         itemContent={(_, price) => (
           <>
             <td>{price.region}</td>
-            <td>{price.zone}</td>
+            <td>{price.zones.map(zone => zone.slice(price.region.length + 1)).join(", ")}</td>
             <td>{price.family}</td>
             <td>{price.name}</td>
             <td>{price.guest_cpus}</td>
