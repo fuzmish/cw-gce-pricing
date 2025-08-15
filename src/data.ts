@@ -19,7 +19,7 @@ export interface ResourceSkus {
 export interface Price {
   region: string
   family: string
-  zone: string
+  zones: string[]
   name: string
   guest_cpus: number
   memory_mb: number
