@@ -14,6 +14,7 @@ export interface Sku {
 export interface ResourceSkus {
   CPU?: Sku
   RAM?: Sku
+  GPU?: Sku
 }
 
 export interface Price {
@@ -21,8 +22,8 @@ export interface Price {
   family: string
   zones: string[]
   name: string
-  guest_cpus: number
-  memory_mb: number
+  guest_cpus: number | null
+  memory_mb: number | null
   cpu_on_demand: number | null
   cpu_spot: number | null
   cpu_c1y: number | null
@@ -31,6 +32,10 @@ export interface Price {
   memory_spot: number | null
   memory_c1y: number | null
   memory_c3y: number | null
+  gpu_on_demand: number | null
+  gpu_spot: number | null
+  gpu_c1y: number | null
+  gpu_c3y: number | null
   total_on_demand: number | null
   total_spot: number | null
   total_c1y: number | null
